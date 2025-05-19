@@ -25,7 +25,7 @@ y_test = pd.read_csv('obesity_preprocessing/y_test.csv').squeeze()
 # -------------------------------
 mlflow.set_experiment("Obesity Prediction")
 
-with mlflow.start_run():
+with mlflow.start_run(nested=True):  # ✅ Perbaikan: nested=True
     # Logging parameter secara manual
     mlflow.log_param("n_estimators", args.n_estimators)
     mlflow.log_param("max_depth", args.max_depth)
