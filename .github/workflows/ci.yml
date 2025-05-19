@@ -21,17 +21,17 @@ jobs:
           activate-environment: obesity-env
           auto-activate-base: false
 
-      - name: Install dependencies
+      - name: install dependencies
         shell: bash
         run: |
-          source ~/miniconda3/etc/profile.d/conda.sh
+          source /usr/share/miniconda/etc/profile.d/conda.sh
           conda activate obesity-env
-          pip install mlflow
+          pip install mlflow dagshub
 
       - name: Run MLflow Project
         shell: bash
         run: |
-          source ~/miniconda3/etc/profile.d/conda.sh
+          source /usr/share/miniconda/etc/profile.d/conda.sh
           conda activate obesity-env
           cd MLProject
           mlflow run . -P n_estimators=100 -P max_depth=5
