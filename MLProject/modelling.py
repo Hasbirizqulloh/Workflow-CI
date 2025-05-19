@@ -23,7 +23,6 @@ y_test = pd.read_csv('obesity_preprocessing/y_test.csv').squeeze()
 # -------------------------------
 # MLflow manual tracking
 # -------------------------------
-mlflow.set_experiment("Obesity Prediction")
 
 with mlflow.start_run(nested=True):  # ✅ Perbaikan: nested=True
     # Logging parameter secara manual
