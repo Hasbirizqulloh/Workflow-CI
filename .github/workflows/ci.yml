@@ -21,9 +21,10 @@ jobs:
           activate-environment: obesity-env
           auto-activate-base: false
 
-      - name: Install dependencies (MLflow & DagsHub)
+      - name: Install dependencies
         shell: bash
         run: |
+          conda init
           conda activate obesity-env
           pip install mlflow
 
