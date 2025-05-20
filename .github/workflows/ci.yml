@@ -42,8 +42,12 @@ jobs:
           mlflow run MLProject --env-manager=conda
 
       - name: Upload to Google Drive
-        run: |
-          
+        uses: actions/upload-artifact@v3
+        with:
+          name: obesity_model
+          path: obesity_model
+
+      - name: Get latest MLflow run_id
         run: |
           echo "Latest run_id:"
           mlflow experiments list
