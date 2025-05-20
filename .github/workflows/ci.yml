@@ -2,32 +2,32 @@ name: CI - Train Model with MLflow
 
 on:
   push:
-    paths:
-      - 'MLProject/**'
-      - '.github/workflows/ci.yml'
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  CSV_PATH: MLProject/obesity_preprocessing
+  Target: obesity
 
 jobs:
   train:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Python
+      - name: Set up Python 3.12.7
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.7'
 
       - name: Check Env
         run: |
-          echo "Python version:"
-          python --version
-          echo "Installed packages:"
-          pip list
-          echo "Directory structure:"
-          ls -R
+          echo "CSV_PATH: ${{ env.CSV_PATH }}"
+          echo "Target: ${{ env.Target }}"
 
       - name: Install dependencies
         run: |
@@ -35,11 +35,10 @@ jobs:
 
       - name: Run mlflow project
         run: |
-          cd MLProject
           mlflow run . --env-manager=local
 
       - name: Get latest MLflow run_id (Opsional)
         run: |
-          echo "Latest run_id:"
-          mlflow experiments list
-          echo "📦 Training complete"
+          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest run_id: $RUN_ID"
