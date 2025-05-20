@@ -37,11 +37,13 @@ jobs:
         run: |
           mlflow run MLProject --env-manager=local
 
-      - name: install python dependencies
+      - name: Install python dependencies
         run: |
           mlflow run MLProject --env-manager=conda
 
-      - name: Get latest MLflow run_id
+      - name: Upload to Google Drive
+        run: |
+          
         run: |
           echo "Latest run_id:"
           mlflow experiments list
