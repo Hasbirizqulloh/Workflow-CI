@@ -10,7 +10,7 @@ on:
 
 env:
   CSV_PATH: MLProject/obesity_preprocessing
-  Target: obesity
+  Target: ObesityCategory
 
 jobs:
   train:
@@ -26,20 +26,22 @@ jobs:
 
       - name: Check Env
         run: |
-          echo "CSV_PATH: ${{ env.CSV_PATH }}"
-          echo "Target: ${{ env.Target }}"
+          echo "CSV_PATH: $CSV_PATH"
 
       - name: Install dependencies
         run: |
-          pip install mlflow==2.19.0
+          python -m pip install --upgrade pip
+          pip install mlflow
 
       - name: Run mlflow project
         run: |
-          cd MLProject
-          mlflow run . --env-manager=local
+          mlflow run MLProject --env-manager=local
+
+      - name: install python dependencies
+        run: |
+          mlflow run MLProject --env-manager=conda
 
       - name: Get latest MLflow run_id
         run: |
-          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id: $RUN_ID"
+          echo "Latest run_id:"
+          mlflow experiments list

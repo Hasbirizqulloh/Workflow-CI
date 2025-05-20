@@ -7,4 +7,5 @@ entry_points:
     parameters:
       n_estimators: { type: int, default: 100 }
       max_depth: { type: int, default: 5 }
-    command: 'python modelling.py --n_estimators {n_estimators} --max_depth {max_depth}'
+      dataset: { type: string, default: obesity_preprocessing }
+    command: 'python modelling.py --n_estimators {n_estimators} --max_depth {max_depth} --dataset {dataset}'
