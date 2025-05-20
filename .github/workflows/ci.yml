@@ -39,5 +39,5 @@ jobs:
 
       - name: Get latest MLflow run_id
         run: |
-          echo "Latest run_id:"
-          mlflow experiments list
+          run_id=$(mlflow search runs --max-results 1 --order-by START_TIME_DESC --output json | jq -r '.runs[0].info.run_id')
+          echo "run_id=$run_id" >> $GITHUB_ENV
