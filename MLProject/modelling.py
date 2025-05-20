@@ -10,7 +10,6 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_estimators', type=int, default=100)
 parser.add_argument('--max_depth', type=int, default=5)
-parser.add_argument('--target', type=str, default='ObesityCategory')
 args = parser.parse_args()
 
 # -------------------------------
