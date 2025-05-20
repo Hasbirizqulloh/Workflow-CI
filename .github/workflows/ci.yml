@@ -40,4 +40,6 @@ jobs:
 
       - name: Get latest MLflow run_id (Opsional)
         run: |
+          echo "Latest run_id:"
+          mlflow experiments list
           echo "📦 Training complete"
