@@ -10,28 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: 📥 Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
         with:
-          auto-update-conda: true
-          environment-file: MLProject/conda.yaml
-          activate-environment: obesity-env
-          auto-activate-base: false
+          python-version: '3.12.7'
 
-      - name: install dependencies
-        shell: bash
+      - name: 📦 Install dependencies
         run: |
-          source /usr/share/miniconda/etc/profile.d/conda.sh
-          conda activate obesity-env
-          pip install mlflow dagshub
+          python -m pip install --upgrade pip
+          pip install -r MLProject/requirements.txt
+          pip install mlflow dagshub scikit-learn pandas
 
-      - name: Run MLflow Project
-        shell: bash
+      - name: 🚀 Run MLflow project
         run: |
-          source /usr/share/miniconda/etc/profile.d/conda.sh
-          conda activate obesity-env
           cd MLProject
           mlflow run . -P n_estimators=100 -P max_depth=5
+
+      - name: 📁 Get latest MLflow run_id (optional)
+        run: |
+          echo "Last run:"
+          mlflow runs list
