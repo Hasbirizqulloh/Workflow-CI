@@ -2,11 +2,9 @@ name: obesity-env
 channels:
   - defaults
 dependencies:
-  - python=3.10
-  - scikit-learn
-  - pandas
-  - matplotlib
-  - seaborn
+  - python=3.12.7
   - pip
   - pip:
-      - mlflow
+      - mlflow==2.19.0
+      - pandas
+      - scikit-learn
