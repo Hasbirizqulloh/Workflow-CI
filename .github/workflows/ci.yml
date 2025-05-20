@@ -20,6 +20,15 @@ jobs:
         with:
           python-version: '3.12.7'
 
+      - name: Check Env
+        run: |
+          echo "Python version:"
+          python --version
+          echo "Installed packages:"
+          pip list
+          echo "Directory structure:"
+          ls -R
+
       - name: Install dependencies
         run: |
           pip install mlflow==2.19.0
