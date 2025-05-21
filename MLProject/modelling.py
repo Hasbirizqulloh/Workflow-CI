@@ -1,6 +1,8 @@
 import pandas as pd
 import mlflow
 import argparse
+import joblib
+import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
@@ -48,3 +50,7 @@ with mlflow.start_run(nested=True):
 
     # Simpan model sebagai artifact
     mlflow.sklearn.log_model(clf, "model")
+
+
+os.makedirs("outputs", exist_ok=True)
+joblib.dump(clf, "outputs/obesity_model.pkl")

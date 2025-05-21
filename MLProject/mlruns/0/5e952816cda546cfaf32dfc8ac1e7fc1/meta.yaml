@@ -1,0 +1,15 @@
+artifact_uri: file:///I:/LASKAR%20AI/Dicoding/MSML/Workflow-CI/MLProject/mlruns/0/5e952816cda546cfaf32dfc8ac1e7fc1/artifacts
+end_time: 1747726877932
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5e952816cda546cfaf32dfc8ac1e7fc1
+run_name: gaudy-chimp-17
+run_uuid: 5e952816cda546cfaf32dfc8ac1e7fc1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747726852800
+status: 3
+tags: []
+user_id: Moh_Hasbi
