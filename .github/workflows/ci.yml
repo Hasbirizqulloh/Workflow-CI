@@ -26,33 +26,27 @@ jobs:
       - name: Check Env
         run: |
           echo "CSV_PATH: $CSV_PATH"
-          echo "Target: $Target"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mlflow gdown
+          pip install mlflow dagshub
 
       - name: Set MLflow Tracking URI
         run: |
-          echo "MLFLOW_TRACKING_URI=http://127.0.0.1:5000" >> $GITHUB_ENV
+          dagshub login --token ${{secrets.dagshub}}
 
       - name: Run mlflow project
         run: |
           mlflow run MLProject --env-manager=local
 
-      - name: Install Python dependencies (redundant safety)
+      - name: Install Python dependencies
         run: |
-          pip install -r MLProject/requirements.txt || true
+          pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
       - name: Upload to Google Drive
         env:
-          GDRIVE_PARENT_ID: ${{ secrets.GDRIVE_FOLDER_ID }} # simpan folder ID Google Drive sebagai secret
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }} # Mengambil kredensial dari GitHub Secrets
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }} # Mengambil kredensial dari GitHub Secrets
         run: |
-          gdown upload MLProject/outputs/obesity_model.pkl --parent $GDRIVE_PARENT_ID
-
-      - name: Upload model artifact
-        uses: actions/upload-artifact@refs/tags/v3.1.2
-        with:
-          name: obesity-model
-          path: MLProject/outputs/obesity_model.pkl
+          python MLproject/upload_to_gdrive.py
