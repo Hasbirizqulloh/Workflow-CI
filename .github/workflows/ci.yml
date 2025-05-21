@@ -52,7 +52,7 @@ jobs:
           gdown upload MLProject/outputs/obesity_model.pkl --parent $GDRIVE_PARENT_ID
 
       - name: Upload model artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: obesity-model
           path: MLProject/outputs/obesity_model.pkl
