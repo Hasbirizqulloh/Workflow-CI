@@ -8,8 +8,6 @@ on:
 env:
   CSV_PATH: MLProject/obesity_preprocessing
   Target: ObesityCategory
-  MLFLOW_TRACKING_URI: ./mlruns
-  MLFLOW_ALLOW_FILE_STORE: true
 
 jobs:
   train:
@@ -36,36 +34,36 @@ jobs:
         run: |
           mlflow run MLProject --env-manager=local
 
-      - name: Find model artifacts location
+      - name: Find and prepare model artifacts
         run: |
-          echo "=== Searching for MLmodel file ==="
+          echo "=== Searching for model artifacts ==="
           find . -name "MLmodel" -type f 2>/dev/null
-          echo "=== Searching for model directories ==="
+          echo "=== All artifact directories ==="
           find . -path "*/artifacts/model" -type d 2>/dev/null
-          echo "=== Full mlruns structure (depth 5) ==="
-          find ./mlruns -maxdepth 5 -type d 2>/dev/null || echo "No mlruns directory"
-          echo "=== Full mlartifacts structure ==="
-          find ./mlartifacts -maxdepth 5 -type d 2>/dev/null || echo "No mlartifacts directory"
+          find . -path "*/model/MLmodel" -type f 2>/dev/null
 
-          # Dynamically find the model path
-          MODEL_PATH=$(find . -path "*/artifacts/model" -type d | head -n 1)
-          if [ -z "$MODEL_PATH" ]; then
-            echo "WARNING: Model artifacts directory not found!"
-            MODEL_PATH="./MLProject/outputs"
-          fi
-          echo "MODEL_PATH=$MODEL_PATH" >> $GITHUB_ENV
-          echo "Found model at: $MODEL_PATH"
+          # Copy model to a known location for upload & docker
+          MODEL_DIR=$(dirname $(find . -path "*/model/MLmodel" -type f | head -n 1))
+          echo "Found model at: $MODEL_DIR"
+          mkdir -p ./model_export
+          cp -r "$MODEL_DIR"/* ./model_export/
+          echo "=== Model export contents ==="
+          ls -la ./model_export/
+
+          # Also get the RUN_ID for docker build
+          RUN_ID=$(python -c "import mlflow; print(mlflow.search_runs(experiment_ids=['0'], order_by=['start_time DESC'])['run_id'].iloc[0])")
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest run_id: $RUN_ID"
 
       - name: Upload Model Artifact to GitHub
         uses: actions/upload-artifact@v4
         with:
           name: obesity-prediction-model
-          path: ${{ env.MODEL_PATH }}/
+          path: ./model_export/
 
       # Build Docker Model
       - name: Build Docker Model
         run: |
-          RUN_ID=$(python -c "import mlflow; print(mlflow.search_runs(experiment_ids=['0'], order_by=['start_time DESC'])['run_id'].iloc[0])")
           echo "Building Docker with RUN_ID: $RUN_ID"
           mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "obesity-prediction-model"
 
