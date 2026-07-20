@@ -9,6 +9,7 @@ env:
   CSV_PATH: MLProject/obesity_preprocessing
   Target: ObesityCategory
   MLFLOW_TRACKING_URI: ./mlruns
+  MLFLOW_ALLOW_FILE_STORE: true
 
 jobs:
   train:
