@@ -8,6 +8,7 @@ on:
 env:
   CSV_PATH: MLProject/obesity_preprocessing
   Target: ObesityCategory
+  MLFLOW_TRACKING_URI: ./mlruns
 
 jobs:
   train:
@@ -28,27 +29,43 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mlflow dagshub
+          pip install mlflow dagshub scikit-learn pandas joblib
 
       - name: Run mlflow project
         run: |
           mlflow run MLProject --env-manager=local
 
-      - name: Get latest MLflow run_id
+      - name: Find model artifacts location
         run: |
-          RUN_ID=$(python -c "import mlflow; print(mlflow.search_runs(experiment_ids=['0'], order_by=['start_time DESC'])['run_id'].iloc[0])")
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id: $RUN_ID"
+          echo "=== Searching for MLmodel file ==="
+          find . -name "MLmodel" -type f 2>/dev/null
+          echo "=== Searching for model directories ==="
+          find . -path "*/artifacts/model" -type d 2>/dev/null
+          echo "=== Full mlruns structure (depth 5) ==="
+          find ./mlruns -maxdepth 5 -type d 2>/dev/null || echo "No mlruns directory"
+          echo "=== Full mlartifacts structure ==="
+          find ./mlartifacts -maxdepth 5 -type d 2>/dev/null || echo "No mlartifacts directory"
+
+          # Dynamically find the model path
+          MODEL_PATH=$(find . -path "*/artifacts/model" -type d | head -n 1)
+          if [ -z "$MODEL_PATH" ]; then
+            echo "WARNING: Model artifacts directory not found!"
+            MODEL_PATH="./MLProject/outputs"
+          fi
+          echo "MODEL_PATH=$MODEL_PATH" >> $GITHUB_ENV
+          echo "Found model at: $MODEL_PATH"
 
       - name: Upload Model Artifact to GitHub
         uses: actions/upload-artifact@v4
         with:
           name: obesity-prediction-model
-          path: mlruns/0/${{ env.RUN_ID }}/artifacts/model/
+          path: ${{ env.MODEL_PATH }}/
 
       # Build Docker Model
       - name: Build Docker Model
         run: |
+          RUN_ID=$(python -c "import mlflow; print(mlflow.search_runs(experiment_ids=['0'], order_by=['start_time DESC'])['run_id'].iloc[0])")
+          echo "Building Docker with RUN_ID: $RUN_ID"
           mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "obesity-prediction-model"
 
       # Login to Docker Hub
