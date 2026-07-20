@@ -26,30 +26,29 @@ y_test = pd.read_csv('obesity_preprocessing/y_test.csv').squeeze()
 # MLflow manual tracking
 # -------------------------------
 
-with mlflow.start_run(nested=True): 
-    # Logging parameter secara manual
-    mlflow.log_param("n_estimators", args.n_estimators)
-    mlflow.log_param("max_depth", args.max_depth)
+# Logging parameter secara manual
+mlflow.log_param("n_estimators", args.n_estimators)
+mlflow.log_param("max_depth", args.max_depth)
 
-    # Training model
-    clf = RandomForestClassifier(n_estimators=args.n_estimators, max_depth=args.max_depth)
-    clf.fit(X_train, y_train)
+# Training model
+clf = RandomForestClassifier(n_estimators=args.n_estimators, max_depth=args.max_depth)
+clf.fit(X_train, y_train)
 
-    # Prediksi dan evaluasi
-    y_pred = clf.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred, average='macro')
-    recall = recall_score(y_test, y_pred, average='macro')
+# Prediksi dan evaluasi
+y_pred = clf.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='macro')
+recall = recall_score(y_test, y_pred, average='macro')
 
-    # Logging metrics secara manual
-    mlflow.log_metric("accuracy", acc)
-    mlflow.log_metric("precision", precision)
-    mlflow.log_metric("recall", recall)
+# Logging metrics secara manual
+mlflow.log_metric("accuracy", acc)
+mlflow.log_metric("precision", precision)
+mlflow.log_metric("recall", recall)
 
-    print("Akurasi:", acc)
+print("Akurasi:", acc)
 
-    # Simpan model sebagai artifact
-    mlflow.sklearn.log_model(clf, "model")
+# Simpan model sebagai artifact
+mlflow.sklearn.log_model(clf, "model")
 
 
 os.makedirs("outputs", exist_ok=True)
